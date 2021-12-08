@@ -39,17 +39,17 @@ contract SingleEditionMintable is
     event EditionSold(uint256 price, address owner);
 
     // metadata
-    string private description;
+    string public description;
 
     // Media Urls
     // animation_url field in the metadata
-    string private animationUrl;
+    string public animationUrl;
     // Hash for the associated animation
-    bytes32 private animationHash;
+    bytes32 public animationHash;
     // Image in the metadata
-    string private imageUrl;
+    string public imageUrl;
     // Hash for the associated image
-    bytes32 private imageHash;
+    bytes32 public imageHash;
 
     // Total size of edition that can be minted
     uint256 public editionSize;
@@ -96,11 +96,13 @@ contract SingleEditionMintable is
         string memory _imageUrl,
         bytes32 _imageHash,
         uint256 _editionSize,
-        uint256 _royaltyBPS
+        uint256 _royaltyBPS,
+        uint256 _salePrice
     ) public initializer {
         __ERC721_init(_name, _symbol);
         __Ownable_init();
         // Set ownership to original sender of contract call
+        setSalePrice(_salePrice);
         transferOwnership(_owner);
         description = _description;
         animationUrl = _animationUrl;
@@ -113,11 +115,11 @@ contract SingleEditionMintable is
         atEditionId.increment();
     }
 
-
     /// @dev returns the number of minted tokens within the edition
     function totalSupply() public view returns (uint256) {
         return atEditionId.current() - 1;
     }
+
     /**
         Simple eth-based sales function
         More complex sales functions can be implemented through ISingleEditionMintable interface
@@ -143,7 +145,7 @@ contract SingleEditionMintable is
            Setting a sales price allows users to mint the edition until it sells out.
            For more granular sales, use an external sales contract.
      */
-    function setSalePrice(uint256 _salePrice) external onlyOwner {
+    function setSalePrice(uint256 _salePrice) public onlyOwner {
         salePrice = _salePrice;
         emit PriceChanged(salePrice);
     }

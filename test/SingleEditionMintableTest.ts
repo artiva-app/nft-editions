@@ -42,7 +42,8 @@ describe("SingleEditionMintable", () => {
       "0x0000000000000000000000000000000000000000000000000000000000000000",
       // 1% royalty since BPS
       10,
-      10
+      10,
+      ethers.utils.parseEther("0.2")
     );
 
     const editionResult = await dynamicSketch.getEditionAtId(0);
@@ -66,7 +67,11 @@ describe("SingleEditionMintable", () => {
     expect(await minterContract.editionSize()).to.be.equal(10);
     // TODO(iain): check bps
     expect(await minterContract.owner()).to.be.equal(signerAddress);
+    expect(await minterContract.salePrice()).to.be.equal(
+      ethers.utils.parseEther("0.2")
+    );
   });
+
   describe("with a edition", () => {
     let signer1: SignerWithAddress;
     let minterContract: SingleEditionMintable;
@@ -81,7 +86,8 @@ describe("SingleEditionMintable", () => {
         "",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
         10,
-        10
+        10,
+        0
       );
 
       const editionResult = await dynamicSketch.getEditionAtId(0);
@@ -140,6 +146,7 @@ describe("SingleEditionMintable", () => {
         "0x0000000000000000000000000000000000000000000000000000000000000000",
         "",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
+        0,
         0,
         0
       );
@@ -231,7 +238,8 @@ describe("SingleEditionMintable", () => {
           "uri",
           "0x0000000000000000000000000000000000000000000000000000000000000000",
           12,
-          12
+          12,
+          0
         )
       ).to.be.revertedWith("Initializable: contract is already initialized");
       await minterContract.mintEdition(await signer1.getAddress());
@@ -292,9 +300,10 @@ describe("SingleEditionMintable", () => {
           "0x0000000000000000000000000000000000000000000000000000000000000000",
           // 2% royalty since BPS
           200,
-          200
+          200,
+          0
         );
-    
+
         const editionResult = await dynamicSketch.getEditionAtId(1);
         const minterContractNew = (await ethers.getContractAt(
           "SingleEditionMintable",
@@ -302,9 +311,14 @@ describe("SingleEditionMintable", () => {
         )) as SingleEditionMintable;
 
         await minterContractNew.mintEdition(signerAddress);
-        expect((await minterContractNew.royaltyInfo(1, ethers.utils.parseEther("1.0")))[1]).to.be.equal(
-          ethers.utils.parseEther("0.02")
-        );
+        expect(
+          (
+            await minterContractNew.royaltyInfo(
+              1,
+              ethers.utils.parseEther("1.0")
+            )
+          )[1]
+        ).to.be.equal(ethers.utils.parseEther("0.02"));
       });
     });
     it("mints a large batch", async () => {
@@ -317,6 +331,7 @@ describe("SingleEditionMintable", () => {
         "0x0000000000000000000000000000000000000000000000000000000000000000",
         "",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
+        0,
         0,
         0
       );

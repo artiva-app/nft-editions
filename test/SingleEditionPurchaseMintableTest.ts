@@ -41,7 +41,8 @@ describe("SingleEditionMintable", () => {
       "",
       "0x0000000000000000000000000000000000000000000000000000000000000000",
       10,
-      10
+      10,
+      0
     );
 
     const editionResult = await dynamicSketch.getEditionAtId(0);
@@ -71,7 +72,45 @@ describe("SingleEditionMintable", () => {
     expect(
       (await signer.getBalance())
         .sub(signerBalance)
-        .gte(ethers.utils.parseEther('0.19'))
+        .gte(ethers.utils.parseEther("0.19"))
+    ).to.be.true;
+  });
+
+  it("purchases a edition from init", async () => {
+    await dynamicSketch.createEdition(
+      "Testing Token",
+      "TEST",
+      "This is a testing token for all",
+      "https://ipfs.io/ipfsbafybeify52a63pgcshhbtkff4nxxxp2zp5yjn2xw43jcy4knwful7ymmgy",
+      "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "",
+      "0x0000000000000000000000000000000000000000000000000000000000000000",
+      10,
+      10,
+      ethers.utils.parseEther("0.2")
+    );
+
+    const editionResult = await dynamicSketch.getEditionAtId(0);
+    const minterContract = (await ethers.getContractAt(
+      "SingleEditionMintable",
+      editionResult
+    )) as SingleEditionMintable;
+    expect(await minterContract.name()).to.be.equal("Testing Token");
+    expect(await minterContract.symbol()).to.be.equal("TEST");
+
+    const [_, s2] = await ethers.getSigners();
+    expect(
+      await minterContract
+        .connect(s2)
+        .purchase({ value: ethers.utils.parseEther("0.2") })
+    ).to.emit(minterContract, "EditionSold");
+    const signerBalance = await signer.getBalance();
+    await minterContract.withdraw();
+    // Some ETH is lost from withdraw contract interaction.
+    expect(
+      (await signer.getBalance())
+        .sub(signerBalance)
+        .gte(ethers.utils.parseEther("0.19"))
     ).to.be.true;
   });
 });
