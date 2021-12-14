@@ -37,6 +37,7 @@ contract SingleEditionMintable is
     using CountersUpgradeable for CountersUpgradeable.Counter;
     event PriceChanged(uint256 amount);
     event EditionSold(uint256 price, address owner);
+    event FundsWithdrawn(uint256 amount);
 
     // metadata
     string public description;
@@ -102,7 +103,7 @@ contract SingleEditionMintable is
         __ERC721_init(_name, _symbol);
         __Ownable_init();
         // Set ownership to original sender of contract call
-        setSalePrice(_salePrice);
+        if (_salePrice > 0) setSalePrice(_salePrice);
         transferOwnership(_owner);
         description = _description;
         animationUrl = _animationUrl;
@@ -124,6 +125,21 @@ contract SingleEditionMintable is
         Simple eth-based sales function
         More complex sales functions can be implemented through ISingleEditionMintable interface
      */
+
+    /**
+      @dev This allows the user to purchase a edition edition
+           at the given price in the contract.
+     */
+    function batchPurchase(uint256 _amount) external payable returns (uint256) {
+        require(salePrice > 0, "Not for sale");
+        require(msg.value == (_amount * salePrice), "Wrong price");
+        address[] memory toMint = new address[](1);
+        toMint[0] = msg.sender;
+        for (uint256 i = 0; i < _amount; i++) {
+            emit EditionSold(salePrice, msg.sender);
+            _mintEditions(toMint);
+        }
+    }
 
     /**
       @dev This allows the user to purchase a edition edition
@@ -155,6 +171,7 @@ contract SingleEditionMintable is
      */
     function withdraw() external onlyOwner {
         // No need for gas limit to trusted address.
+        emit FundsWithdrawn(address(this).balance);
         AddressUpgradeable.sendValue(payable(owner()), address(this).balance);
     }
 

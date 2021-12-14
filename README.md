@@ -27,7 +27,7 @@ Mainnet: https://nft-minter-mainnet.vercel.app/
 
 **Mainnet ETH**: [0x91A8713155758d410DFAc33a63E193AE3E89F909](https://etherscan.io/address/0x91A8713155758d410DFAc33a63E193AE3E89F909)
 
-**Rinkeby**: [0xB9F108d3B36471A377d66bdE0101033B178C1754](https://rinkeby.etherscan.io/address/0xB9F108d3B36471A377d66bdE0101033B178C1754)
+**Rinkeby**: [0xb01912a8a2b21B181fcD0a22CF85Bf10d9BffB69](https://rinkeby.etherscan.io/address/0xb01912a8a2b21B181fcD0a22CF85Bf10d9BffB69)
 
 **Polygon**: [0x9168C5ba5a0a76db8A1BF5b2eE5557f2A0ECA4f4](https://polygonscan.com/address/0x9168C5ba5a0a76db8A1BF5b2eE5557f2A0ECA4f4)
 
